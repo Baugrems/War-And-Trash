@@ -28,7 +28,7 @@ def war(deck, file):
     warpile = []
     currentWinner = None
 
-    while (len(hand1) + len(winnings1) < 52) and (len(hand2) + len(winnings2) > 52):
+    while (len(hand1) + len(winnings1) < 52) and (len(hand2) + len(winnings2) < 52):
         if not hand1:
             hand1 = shuffle(winnings1, file)
             del winnings1[:]
