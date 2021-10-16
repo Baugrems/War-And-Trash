@@ -1,6 +1,13 @@
-import sys
 import random
 
+data = 0
+
+def getTokens(inf):
+    for lt in [line.split() for line in inf]:
+        if not lt:
+            continue
+        for t in lt:
+            yield t
 
 class Card:
     def __init__(self, suit, value):
@@ -27,9 +34,10 @@ class Deck:
             card.show()
 
     def shuffle(self):
+        global data
         c = 0
         while c < len(self.cards) - 1:
-            r = random.uniform(0,1)
+            r = float(next(data))
             p = int(r * (len(self.cards) -c) + c)
             t = self.cards[c]
             self.cards[c] = self.cards[p]
@@ -76,6 +84,7 @@ class WarGame:
         self.currentWinner = None
         self.turns = 0
         self.lastTrans = 0
+        self.data = data
     
     def checkWinner(self):
         if self.currentWinner == self.p1:
@@ -116,16 +125,20 @@ class WarGame:
             return
         if not(self.p2.checkHand()):
             return
-d = Deck()
-p1 = Player("One")
-p2 = Player("Two")
-for x in range(1,27):
-    p1.draw(d)
-    p2.draw(d)
-war = WarGame(p1,p2)
-while len(p1.hand) > 0 and len(p2.hand) > 0:
-    war.nextTurn()
-    war.checkWinner()
+def start(file):
+    global data
+    data = open(file)
+    data = iter(getTokens(data))
+    d = Deck()
+    p1 = Player("One")
+    p2 = Player("Two")
+    for x in range(1,27):
+        p1.draw(d)
+        p2.draw(d)
+    war = WarGame(p1,p2)
+    while len(p1.hand) > 0 and len(p2.hand) > 0:
+        war.nextTurn()
+        war.checkWinner()
 
 
-print("OUTPUT war turns", war.turns, "Transitions", war.transCount, "Last:", war.lastTrans / war.turns)
+    print("OUTPUT war turns", war.turns, "Transitions", war.transCount, "Last: ", war.lastTrans / war.turns)
