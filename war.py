@@ -2,6 +2,7 @@
 data = 0
 
 def getRandom():
+    global data
     return float(next(data))
 
 class Card:

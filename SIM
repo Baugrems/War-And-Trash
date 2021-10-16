@@ -1,18 +1,6 @@
 #!/usr/bin/env python3
 
 import sys
-import war
-import trash
+import warntrash
 
-type = sys.argv[1]
-file = sys.argv[2]
-try:
-	data = open(file)
-except FileNotFoundError:
-	sys.exit(1)
-if type == "war":
-	war.start(file)
-elif type == "trash":
-	trash.start(file)
-else:
-	print("Enter a valid game type (war or trash)!")
+warntrash.start(sys.argv[1], sys.argv[2])
