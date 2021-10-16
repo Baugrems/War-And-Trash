@@ -21,8 +21,11 @@ def war(deck, file):
     last = 0
     transitions = 0
     scores = {'2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, '10':10, 'J':11, 'Q':12, 'K':13, 'A':14}
-    hand1 = deck[0:26]
-    hand2 = deck[26:]
+    hand1 = []
+    hand2 = []
+    for x in range(26):
+        hand1.append(deck.pop())
+        hand2.append(deck.pop())
     winnings1 = []
     winnings2 = []
     warpile = []
@@ -30,10 +33,12 @@ def war(deck, file):
 
     while (len(hand1) + len(winnings1) < 52) and (len(hand2) + len(winnings2) < 52):
         if len(hand1) == 0:
-            hand1 = shuffle(winnings1, file)
+            hand1.extend(winnings1)
+            shuffle(hand1, file)
             del winnings1[:]
         if len(hand2) == 0:
-            hand2 = shuffle(winnings2, file)
+            hand2.extend(winnings2)
+            shuffle(hand2, file)
             del winnings2[:]
         card1 = hand1.pop()
         card2 = hand2.pop()
