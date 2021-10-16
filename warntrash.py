@@ -29,10 +29,10 @@ def war(deck, file):
     currentWinner = None
 
     while (len(hand1) + len(winnings1) < 52) and (len(hand2) + len(winnings2) < 52):
-        if not hand1:
+        if len(hand1) == 0:
             hand1 = shuffle(winnings1, file)
             del winnings1[:]
-        if not hand2:
+        if len(hand2) == 0:
             hand2 = shuffle(winnings2, file)
             del winnings2[:]
         card1 = hand1.pop()
