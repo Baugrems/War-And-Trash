@@ -25,6 +25,7 @@ def war(deck, file):
     hand2 = []
     for x in range(26):
         hand1.append(deck.pop())
+    for x in range(26):
         hand2.append(deck.pop())
     winnings1 = []
     winnings2 = []
@@ -74,27 +75,28 @@ def war(deck, file):
                 last = turns
     print("OUTPUT war", turns, transitions, last/turns)
 
-    def trash(deck, file):
-        turns = 0
-        transitions = 0
-        last = 0
-        scores = {'A':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, '10':10, 'J':11, 'Q':12, 'K':13}
-        currentWinner = None
-        arr1 = []
-        arr2 = []
-        discard = []
+def trash(deck, file):
+    pass
+    # turns = 0
+    # transitions = 0
+    # last = 0
+    # scores = {'A':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, '10':10, 'J':11, 'Q':12, 'K':13}
+    # currentWinner = None
+    # arr1 = []
+    # arr2 = []
+    # discard = []
 
-        discard.append(deck.pop())
+    # discard.append(deck.pop())
 
-        for x in range(10):
-            arr1.append(deck.pop())
-            arr2.append(deck.pop())
-        seen1 = [False]*10
-        seen2 = [False]*10
+    # for x in range(10):
+    #     arr1.append(deck.pop())
+    #     arr2.append(deck.pop())
+    # seen1 = [False]*10
+    # seen2 = [False]*10
 
-        hand = None
+    # hand = None
 
-        print("OUTPUT trash", turns, transitions, last/turns)
+    # print("OUTPUT trash", turns, transitions, last/turns)
 
 
 def start(name, file):
