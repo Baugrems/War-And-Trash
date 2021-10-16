@@ -1,13 +1,8 @@
-import random
 
 data = 0
 
-def getTokens(inf):
-    for lt in [line.split() for line in inf]:
-        if not lt:
-            continue
-        for t in lt:
-            yield t
+def getRandom():
+    return float(next(data))
 
 class Card:
     def __init__(self, suit, value):
@@ -128,7 +123,6 @@ class WarGame:
 def start(file):
     global data
     data = open(file)
-    data = iter(getTokens(data))
     d = Deck()
     p1 = Player("One")
     p2 = Player("Two")

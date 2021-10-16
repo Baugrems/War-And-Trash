@@ -6,6 +6,10 @@ import trash
 
 type = sys.argv[1]
 file = sys.argv[2]
+try:
+	data = open(file)
+except FileNotFoundError:
+	sys.exit(1)
 if type == "war":
 	war.start(file)
 elif type == "trash":
