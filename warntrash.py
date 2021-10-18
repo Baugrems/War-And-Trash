@@ -1,4 +1,6 @@
 import sys
+import random
+random.seed("12345")
 
 def shuffle(deck, file):
     try:
@@ -129,6 +131,7 @@ class TrashGame:
         self.discard = []
         self.currentWinner = None
         self.file = file
+        self.recurse = 0
         shuffle(self.deck, file)
         for x in range(10):
             self.p1.arr.append(self.deck.pop())
@@ -138,17 +141,20 @@ class TrashGame:
         self.discard.append(self.deck.pop())
         while self.p1.clear > 0 and self.p2.clear > 0:
             self.turns += 1
+            self.recuse = 0
             if not self.turn(self.p1):
                 # print("p1 turn returned false")
                 return
             # print("p1 turn over")
             self.turns += 1
+            self.recurse = 0
             if not self.turn(self.p2):
                 # print("p2 turn returned false")
                 return
             # print("p2 turn over")
 
     def turn(self, p):
+        self.recurse += 1
         self.checkWinner()
         if self.checkGame(p):
             if p.hand == None:
@@ -210,6 +216,8 @@ class TrashGame:
                 if p.arr[x] == 11:
                     continue
                 most = x
+        if self.recurse > 200:
+            return random.randint(0, p.clear)
         return most
 
     
