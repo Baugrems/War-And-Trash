@@ -217,7 +217,7 @@ class TrashGame:
                     continue
                 most = x
         if self.recurse > 200:
-            return random.randint(0, p.clear)
+            return random.randint(0, p.clear - 1)
         return most
 
     
