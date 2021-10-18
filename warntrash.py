@@ -86,11 +86,16 @@ class Player:
 
 
     def need(self,value):
+        # print("Check need")
         if (False in self.seen) and value == 11:
             return True
-        for x in self.seen:
-            if value == x:
+        # print(value)
+        if value > self.clear:
+            return False
+        for x in range(len(self.arr)):
+            if x == value -1 and self.seen[x]:
                 return False
+        # print("Need a", value)
         return True
 
 def getScore(p):
@@ -101,41 +106,46 @@ def getScore(p):
             count += 1
     return (((c+1) * c) + (c - count))
 
-def trash(deck, file):
+def trash(file):
     turns = 0
     transitions = 0
     last = 0
     p1 = Player()
     p2 = Player()
-    for x in range(10):
-        p1.arr.append(deck.pop())
-        p2.arr.append(deck.pop())
-    t = TrashGame(turns, transitions, last, deck, p1, p2)
+    t = TrashGame(turns, transitions, last, p1, p2, file)
     t.start()
     #break out and print results
     print("OUTPUT trash", t.turns, t.transitions, t.last/t.turns)
 
 class TrashGame:
-    def __init__(self, turns, transitions, last, deck, p1, p2):
-        self.scores = {'A':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, '10':10, 'J':11, 'Q':12, 'K':13}
+    def __init__(self, turns, transitions, last, p1, p2, file):
+        self.deck = [1,2,3,4,5,6,7,8,9,10,11,12,13]*4
         self.p1 = p1
         self.p2 = p2
         self.turns = turns
         self.transitions = transitions
         self.last = last
-        self.deck = deck
         self.discard = []
         self.currentWinner = None
+        self.file = file
+        shuffle(self.deck, file)
+        for x in range(10):
+            self.p1.arr.append(self.deck.pop())
+            self.p2.arr.append(self.deck.pop())
 
     def start(self):
-        self.discard = self.deck.pop()
+        self.discard.append(self.deck.pop())
         while self.p1.clear > 0 and self.p2.clear > 0:
             self.turns += 1
             if not self.turn(self.p1):
+                # print("p1 turn returned false")
                 return
+            # print("p1 turn over")
             self.turns += 1
             if not self.turn(self.p2):
+                # print("p2 turn returned false")
                 return
+            # print("p2 turn over")
 
     def turn(self, p):
         self.checkWinner()
@@ -149,62 +159,90 @@ class TrashGame:
                         self.discard.append(p.hand)
                         p.hand = None
                         return True
-            if p.hand != 11:
+            elif not p.need(p.hand):
+                # print("Discard unneeded")
+                self.discard.append(p.hand)
+                p.hand = None
+                return True
+            # print(p.hand)
+            if p.hand != 11 and p.hand <= p.clear:
                 r = p.arr[p.hand-1]
                 p.arr[p.hand-1] = p.hand
-                p.seen[p.hhand - 1] = True
+                p.seen[p.hand - 1] = True
                 p.hand = r
+                # print("Picked up", p.hand)
+                # print("Card placed")
                 self.turn(p)
+                return True
+            elif p.hand != 11:
+                self.discard.append(p.hand)
+                # print("Face card discard, end turn: ", p.hand)
+                p.hand = None
+                return True
             else:
                 spot = self.optJack(p)
+                # print("Placing Jack at", spot)
                 t = p.arr[spot]
+                # print(t)
                 p.arr[spot] = p.hand
                 p.hand = t
+                p.seen[spot] = True
+                # print("In hand now:", p.hand)
+                # print("Jack placed")
                 self.turn(p)
+                return True
         else:
             return False
 
     def optJack(self, p):
-        least = 99
         count = [0]*p.clear
-        for x in p.seen:
+        most = 0
+        for x in range(len(p.arr)):
             if p.seen[x]:
-                count[x] += 1
-        for c in count:
-            if c < least:
-                least = c
-        return least
+                continue
+        if len(self.discard) > 0:
+            for x in self.discard:
+                if x < p.clear:
+                    count[x] += 1
+        for x in range(p.clear):
+            if count[x] > most:
+                most = x
+        return most
 
     
     def checkGame(self, p):
         if len(self.deck) == 0:
             t = self.discard.pop()
-            self.deck.append(self.discard)
-            self.deck = shuffle(self.deck)
+            self.deck.extend(self.discard)
+            self.deck = shuffle(self.deck, self.file)
             self.discard.append(t)
         if not False in p.seen:
-            self.deck.append(p.arr)
+            self.deck.extend(p.arr)
             t = self.discard.pop()
-            self.deck.append(self.discard)
-            self.deck = shuffle(self.deck)
+            self.deck.extend(self.discard)
+            self.deck = shuffle(self.deck, self.file)
             self.discard.append(t)
             p.clear -= 1
+            p.arr = []
             if p.clear != 0:
+                # print("Array cleaned!")
                 for x in range(p.clear):
                     p.arr.append(self.deck.pop())
                 p.seen = [False] * p.clear
             else:
+                # print("Game Over'")
                 return False
+        return True
         
 
     def checkWinner(self):
         s1 = getScore(self.p1)
         s2 = getScore(self.p2)
-        if s1 < s2 and self.currentWinner == self.p2:
+        if s1 < s2 and self.currentWinner != self.p1:
             self.transitions += 1
             self.last = self.turns
             self.currentWinner = self.p1
-        elif s2 < s1 and self.currentWinner == self.p1:
+        elif s2 < s1 and self.currentWinner != self.p2:
             self.transitions += 1
             self.last = self.turns
             self.currentWinner = self.p2
@@ -214,12 +252,12 @@ def start(name, file):
         file = open(file)
     except IOError:
         sys.exit(1)
-    deck = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']*4
-    shuffle(deck, file)
     if name == "war":
+        deck = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']*4
+        shuffle(deck, file)
         war(deck, file)
     elif name == "trash":
-        trash(deck, file)
+        trash(file)
     else:
         print("Please choose war or trash")
         sys.exit(1)
