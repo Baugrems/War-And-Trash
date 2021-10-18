@@ -6,6 +6,7 @@ def shuffle(deck, file):
         n = len(deck)
         while(c < n - 1):
             r = float(file.readline().strip())
+            # r = random.uniform(0,1)
             p = int(r * (n-c) + c)
             t = deck[p]
             deck[p] = deck[c]
@@ -114,7 +115,7 @@ def trash(file):
     p2 = Player()
     t = TrashGame(turns, transitions, last, p1, p2, file)
     t.start()
-    #break out and print results
+    #break out and # print results
     print("OUTPUT trash", t.turns, t.transitions, t.last/t.turns)
 
 class TrashGame:
@@ -206,6 +207,8 @@ class TrashGame:
                     count[x] += 1
         for x in range(p.clear):
             if count[x] > most:
+                if p.arr[x] == 11:
+                    continue
                 most = x
         return most
 
